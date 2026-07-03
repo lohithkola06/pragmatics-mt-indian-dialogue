@@ -1,8 +1,25 @@
+# Python
 __pycache__/
-*.pyc
-.env
-.DS_Store
+*.py[cod]
+*.egg-info/
+.pytest_cache/
 .ipynb_checkpoints/
 
-data/raw/private/
-outputs/temp/
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment / secrets
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Private or temporary data (keep .gitkeep placeholders tracked)
+benchmark/data/raw/private/
+experiments/model_outputs/tmp/
+experiments/logs/*.log
+results/**/tmp/
+!**/.gitkeep
