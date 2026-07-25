@@ -1,0 +1,481 @@
+\documentclass[11pt]{article}
+
+% ----------------------------------------------------------------------
+% Packages
+% ----------------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[a4paper,margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=black,
+  urlcolor=blue!60!black,
+  citecolor=black
+}
+
+% ----------------------------------------------------------------------
+% Listing style for JSON
+% ----------------------------------------------------------------------
+\definecolor{codebg}{gray}{0.97}
+\definecolor{codekey}{rgb}{0.10,0.30,0.60}
+\lstdefinestyle{json}{
+  backgroundcolor=\color{codebg},
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  columns=fullflexible,
+  frame=single,
+  rulecolor=\color{gray!40},
+  showstringspaces=false,
+  keepspaces=true,
+  literate=
+    *{0}{{{\color{codekey}0}}}{1}
+     {:}{{{\color{gray}:}}}{1}
+}
+
+\newcommand{\code}[1]{\texttt{\small #1}}
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{0.6em}{}
+\setlist{topsep=2pt,itemsep=1pt}
+
+% ----------------------------------------------------------------------
+% Title
+% ----------------------------------------------------------------------
+\title{\bfseries Pragmatics-Preserving Machine Translation\\ for Indian Dialogue\\[4pt]
+\large Progress Report}
+\author{Lohith Kola} % edit as needed
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+I am building a benchmark to measure whether machine translation systems preserve
+the \emph{social} meaning of Indian conversational dialogue, and not only its
+literal content. A translation can be word-for-word accurate and still be wrong:
+if a student politely asks a professor for more time and the system renders it as a
+blunt demand, no fact has changed, but the student now sounds rude. I call this a
+pragmatic failure, and current evaluation practice does not measure it. This report
+covers what I have done so far this summer. I began by fixing the research
+direction, reviewing seven papers, and writing a design blueprint, and over the past
+few weeks I turned that blueprint into a working instrument: a machine-readable
+annotation schema, a draft pilot dataset of 47 dialogue items in Hindi and Hinglish,
+a complete set of annotation and adjudication guidelines, and a validation and
+analysis toolchain with an automated test suite. I want to be clear at the outset
+that nothing in the dataset has yet been validated by a human, and I have been
+careful not to manufacture any result that would require one. What I have produced
+is the measuring apparatus. Putting it in front of native speakers is what comes
+next.
+\end{abstract}
+
+% ======================================================================
+\section{Introduction and motivation}
+% ======================================================================
+
+Machine translation is usually judged on whether it preserves what was said. The
+question I am asking is different: does it preserve what was \emph{meant}, socially?
+Indian conversation is a good place to ask this, because Hindi marks respect
+grammatically and pervasively. A speaker cannot address someone without choosing
+between the respectful \code{aap}, the familiar \code{tum}, and the intimate
+\code{tu}, and that choice carries information that English has no direct way to
+express. Every translation into English is therefore forced to make a social
+decision that the source made explicitly, and any system can get that decision
+wrong while still being perfectly accurate about the facts.
+
+My working definition is deliberately narrow so that it can be measured:
+
+\begin{quote}
+\itshape
+A pragmatic failure in machine translation occurs when a translation preserves the
+basic semantic content of an utterance but fails to preserve its intended social or
+communicative meaning in context.
+\end{quote}
+
+The primary contribution of this project is a benchmark and an evaluation protocol,
+not a new translation model. My guiding research question is: to what extent do
+current machine translation systems preserve the intended pragmatic and social
+meaning of Indian conversational dialogue, and can that failure be measured
+reliably enough to compare systems and interventions?
+
+% ======================================================================
+\section{What the literature told me}
+% ======================================================================
+
+I grounded the design in seven papers, which fall into three groups. The first
+group shows that stylistic properties of translation are controllable: Sennrich et
+al.~\cite{sennrich2016} steer a politeness distinction with a side constraint, and
+Niu et al.~\cite{niu2017} and Niu and Carpuat~\cite{niu2020} control formality by
+reranking and by synthetic supervision. The second group establishes that standard
+quality scores miss context-dependent meaning. Bawden et al.~\cite{bawden2018}
+build contrastive test suites and show that translation quality can rise while
+discourse accuracy stays at chance. Voita et al.~\cite{voita2019a} find that around
+7\% of English-Russian sentence pairs are individually good yet wrong when read
+together, with forms of address the single largest source, and their repair work
+\cite{voita2019b} shows the same problem can be fixed after the fact. The third
+group is about evaluation itself: Agrawal et al.~\cite{agrawal2024} show that adding
+context to a metric helps mainly for short and ambiguous turns, and that corrupted
+context actively hurts, which is a caution against assuming more context is always
+better.
+
+Three lessons shaped everything that followed. First, semantic quality and social
+appropriateness have to be scored separately, because a translation can be strong
+on one and fail the other. Second, contrastive minimal pairs are the right tool:
+if the wrong candidate is as semantically plausible as the right one, a system that
+ignores social meaning is reduced to guessing. Third, human judgement stays
+primary, and I should expect only moderate agreement on the hardest dimensions.
+Niu and Carpuat report human agreement on formality at around 0.5 on
+Krippendorff's alpha, on a task narrower than mine, so I am treating agreement in
+the 0.4 to 0.6 range on the hard dimensions as expected rather than as failure.
+
+I also identified the gap the project fills. None of the seven papers jointly cover
+speech acts, indirect requests and refusals, the teasing-versus-insult boundary,
+warmth, or discourse-motivated code-switching, and none work on Indian or
+code-mixed data. That combination is where I am placing the benchmark.
+
+% ======================================================================
+\section{Benchmark design}
+% ======================================================================
+
+\subsection{Pragmatic categories}
+I organised the benchmark around four categories, the first three primary and the
+fourth included but treated as the most uncertain:
+
+\begin{enumerate}[label=(\arabic*)]
+  \item Politeness and formality
+  \item Indirect requests and refusals
+  \item Stance and emotion
+  \item Discourse-motivated code-switching
+\end{enumerate}
+
+\subsection{The item}
+Each item is a short dialogue of zero to three previous turns followed by the
+utterance to be translated, annotated with speaker and listener roles, the social
+relationship, a full set of pragmatic labels, one or more acceptable reference
+translations, and a single contrastive translation that is semantically close but
+pragmatically wrong. Listing~\ref{lst:item} shows an abridged item. The full schema
+has 43 fields.
+
+\begin{lstlisting}[style=json,caption={An abridged benchmark item (HIN\_POL\_001).},label={lst:item}]
+{
+  "item_id": "HIN_POL_001",
+  "language": "Hindi",
+  "context": [
+    {"turn_id": 1, "speaker_role": "Professor",
+     "text": "Yeh assignment kal shaam tak jama kar dijiye."}
+  ],
+  "source_utterance": {"turn_id": 2, "speaker_role": "Student",
+     "text": "Sir, kya mujhe do din aur mil sakte hain?"},
+  "literal_gloss": "Sir, can I get two more days?",
+  "relationship": "ACADEMIC", "relative_status": "SPEAKER_LOWER",
+  "primary_phenomenon": "POLITENESS_FORMALITY",
+  "speech_act": "REQUEST", "politeness_level": "RESPECTFUL",
+  "indirectness": "MODERATELY_INDIRECT",
+  "context_status": "HELPFUL",
+  "reference_translations": ["Sir, could I please have two more days?"],
+  "contrastive_translation": "I need two more days.",
+  "contrastive_error": "A deferential request becomes a flat demand to a superior.",
+  "contrastive_error_category": "POLITENESS_ERROR", "severity": "MAJOR",
+  "review_status": "NEEDS_NATIVE_REVIEW"
+}
+\end{lstlisting}
+
+The reference translation ``Sir, could I please have two more days?'' and the
+contrastive ``I need two more days'' say the same thing about the facts. What
+separates them is that a respectful request has become a demand. Rating the first
+as pragmatically correct and the second as incorrect, while rating both as
+semantically adequate, is exactly the judgement the benchmark is built to elicit.
+
+\subsection{Contrastive construction}
+A contrastive translation is only useful if it fails for the right reason. I wrote
+eight requirements for a valid one: it must preserve the propositional content, be
+grammatical, be plausible read in isolation, become inappropriate only in context,
+target a single pragmatic feature, avoid unrelated semantic errors, stay minimally
+different from the reference, and be confirmed by native speakers. The most
+dangerous failure mode is a contrastive that is actually still acceptable, because
+then the item measures nothing and, worse, penalises a system for translating well.
+I made catching that the single most valuable check I ask reviewers to perform.
+
+\subsection{Context necessity and severity}
+Two design choices are worth calling out. Each item records how much its context
+matters, on a three-way scale of \code{NOT\_REQUIRED}, \code{HELPFUL}, and
+\code{REQUIRED}, where \code{REQUIRED} means the intended reading genuinely changes
+without the previous turns. This is what lets me later separate a real context
+benefit from general system capability. Each contrastive error also carries a
+severity of \code{MINOR}, \code{MAJOR}, or \code{CRITICAL}, which feeds a
+severity-weighted error score so that a system making a few reversals of meaning is
+distinguished from one making many cosmetic slips.
+
+% ======================================================================
+\section{Language scope}
+% ======================================================================
+
+I set the first release to Hindi and naturally occurring Hinglish, both translated
+into English, and I keep Hindi and Hinglish as two distinct values rather than
+merging them, so that I can report on monolingual and code-mixed input separately.
+I chose this setting for practical and linguistic reasons: it gives the largest
+available pool of native-speaker annotators, it is heavily used in exactly the
+settings the benchmark models, and Hindi's obligatory politeness marking makes the
+target phenomena frequent and concrete. All source text is written in romanized
+Latin script, which is how Hindi is typically typed in chat and which lets Hindi
+and Hinglish be compared directly, at the known cost that many systems are trained
+on Devanagari.
+
+I want to be explicit about one limitation, because it would be easy for the
+project title to imply otherwise: this choice is not representative of Indian
+languages in general. Hindi is one language among many with different politeness
+systems, and I describe my findings as findings about Hindi and Hinglish, never as
+findings about ``Indian language MT''. Telugu is planned as a second setting, but
+only after the schema has been validated on one language pair, and the binding
+constraint there is annotator availability rather than schema work.
+
+% ======================================================================
+\section{What I built}
+% ======================================================================
+
+Over the past few weeks I turned the design into a working repository.
+Table~\ref{tab:built} lists the components.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Component} & \textbf{What it is} \\
+\midrule
+Machine-readable schema & JSON Schema (draft 2020-12): 43 fields, 19 controlled \\
+                        & vocabularies, 4 cross-field conditional rules \\
+Pilot dataset           & 47 draft dialogue items \\
+Guidelines              & 5 documents: annotation, contrastive construction, \\
+                        & adjudication, human evaluation, and training \\
+Templates               & Annotation, item-review, and adjudication sheets \\
+Tooling                 & Schema validation, dataset validation, statistics, \\
+                        & annotation-sheet generation, agreement analysis \\
+Tests                   & 41 automated tests \\
+\bottomrule
+\end{tabular}
+\caption{Components produced so far.}
+\label{tab:built}
+\end{table}
+
+\subsection{The schema, as a contract}
+I wrote the schema as a JSON Schema so that validation is enforced by a machine
+rather than by discipline. It checks the obvious things, such as required fields
+and controlled vocabularies, but also several cross-field rules that catch subtler
+mistakes: an item whose identifier contradicts its own labels is rejected, a
+code-switching item that fails to name a switch function is rejected, and an item
+that references a context turn which does not exist is rejected. Where the design
+refined the earlier blueprint, for instance by dropping a politeness level that I
+could not reliably separate from its neighbour, I recorded the change and my reason
+in a versioned changelog rather than letting the two drift apart silently.
+
+\subsection{The dataset}
+The pilot contains 47 items. I aimed for a balanced spread and hit it closely.
+Table~\ref{tab:cat} gives the category and language distribution, and
+Table~\ref{tab:ctx} the source-type, context, and severity distributions.
+
+\begin{table}[h]
+\centering
+\small
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Category} & \textbf{Items} & \textbf{Share} \\
+\midrule
+Politeness and formality      & 14 & 29.8\% \\
+Indirect requests / refusals  & 14 & 29.8\% \\
+Stance and emotion            & 12 & 25.5\% \\
+Code-switching                & 7  & 14.9\% \\
+\midrule
+Hindi                         & 26 & 55.3\% \\
+Hinglish                      & 21 & 44.7\% \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\centering
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Attribute} & \textbf{Items} & \textbf{Share} \\
+\midrule
+Elicited            & 35 & 74.5\% \\
+Minimal pair        & 12 & 25.5\% \\
+\midrule
+Context required    & 22 & 46.8\% \\
+Context helpful     & 17 & 36.2\% \\
+Context not required& 8  & 17.0\% \\
+\midrule
+Severity major      & 37 & 78.7\% \\
+Severity minor      & 7  & 14.9\% \\
+Severity critical   & 3  & 6.4\% \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\caption{Left: category and language. Right: source type, context necessity, and severity.}
+\label{tab:cat}\label{tab:ctx}
+\end{table}
+
+Two decisions in this table are deliberate and worth explaining. There are no items
+drawn from real corpora, because I could not yet document their provenance or verify
+their licensing, and inventing a source would have been fabrication. I
+would rather report zero natural items honestly than pad the count. And the twelve
+minimal pairs are six matched pairs that differ in exactly one feature, such as the
+\code{aap} versus \code{tum} pronoun choice, which lets an evaluation isolate a
+single pragmatic contrast.
+
+\subsection{Tooling and tests}
+The scripts are the part I am most confident in, because they are testable and
+tested. Validation runs in two layers, a JSON Schema pass and a set of cross-field
+consistency checks. The statistics script produces the distribution tables above
+directly from the data, so the report cannot drift from the dataset. The agreement
+script computes percentage agreement, Cohen's kappa, and Krippendorff's alpha, and,
+importantly, it reports insufficient data rather than inventing a number when there
+is nothing to compute, which is its correct behaviour right now. Forty-one tests
+cover the validators and the agreement statistics, including a check of
+Krippendorff's alpha against a hand-computed worked example.
+
+% ======================================================================
+\section{Reproducibility}
+% ======================================================================
+
+Everything can be re-run from the repository root, and I verified all of it. The
+commands and their current results are in Table~\ref{tab:verify}.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Command} & \textbf{Result} \\
+\midrule
+\code{validate\_schema.py}                  & Schema is a valid draft 2020-12 schema \\
+\code{validate\_jsonl.py \dots pilot}        & 47 of 47 items valid \\
+\code{python -m unittest discover}          & 41 tests pass \\
+\code{generate\_dataset\_statistics.py}      & Distribution as reported above \\
+\code{create\_annotation\_sheet.py}          & 94 candidate rows for 47 items \\
+\code{calculate\_agreement.py}               & Correctly reports insufficient data \\
+\bottomrule
+\end{tabular}
+\caption{Verification run from the repository root.}
+\label{tab:verify}
+\end{table}
+
+% ======================================================================
+\section{Honest limitations}
+% ======================================================================
+
+I think it is more useful to state the weaknesses plainly than to present the work
+as finished, so here are the ones I already know about.
+
+\begin{itemize}
+  \item \textbf{Nothing is human-validated.} Every item is marked as needing native
+  review. No annotation has happened, no agreement has been measured, and I have
+  not run any translation systems. The apparatus exists; the measurements do not.
+  \item \textbf{Code-switching may not be testable into English.} A Hindi-English
+  switch cannot survive into a monolingual English translation, so these items test
+  whether the \emph{effect} of the switch, such as a shift into an authoritative or
+  intimate footing, survives. Whether that is a fair test is an open question I have
+  flagged for my supervisor.
+  \item \textbf{The target variety of English is undecided.} Indian English has its
+  own politeness conventions, and since the whole benchmark is about social meaning
+  in English output, which variety I judge against is a real decision that nobody
+  has yet made.
+  \item \textbf{Every item has a single author.} I wrote all 47, including both the
+  reference and the contrastive translation for each, so any blind spot of mine is
+  invisible within the dataset. Independent review is the first thing I want to fix
+  next.
+  \item \textbf{The severity distribution is skewed} toward \code{MAJOR}, which I
+  chose not to correct by relabelling, because rating to a target is exactly the
+  calibration error my own guidelines warn against.
+\end{itemize}
+
+% ======================================================================
+\section{Next steps}
+% ======================================================================
+
+The critical path from here does not run through more writing by me; it runs
+through people. The immediate steps, in order, are:
+
+\begin{enumerate}
+  \item Settle the two blocking decisions with my supervisor: whether the
+  code-switching category is well-posed against an English target, and which variety
+  of English the benchmark should target.
+  \item Recruit two native-speaker annotators and one adjudicator, ideally from
+  different regions so that region-dependent judgements can be detected rather than
+  hidden.
+  \item Run a two-stage pilot: first an item review that removes or fixes any item
+  whose contrastive is not genuinely wrong, then blind rating of the survivors.
+  \item Measure inter-annotator agreement per dimension and check the central
+  assumption, that annotators can hold semantic adequacy and pragmatic preservation
+  apart.
+  \item Revise the schema in light of the findings, and only then run the first
+  translation baselines, since baselines against an unvalidated benchmark would not
+  mean anything.
+\end{enumerate}
+
+% ======================================================================
+\section{Conclusion}
+% ======================================================================
+
+I set out to make a specific kind of translation error measurable: the case where
+the words are right but the social meaning is wrong. So far I have turned that idea
+into a concrete, validated, and reproducible instrument, a schema, a 47-item pilot
+dataset, a full set of annotation guidelines, and a tested toolchain, while being
+careful not to claim any result that would require human judgement I have not yet
+collected. The honest status is that the measuring apparatus is built and the
+measurements come next. That is the right place to be before spending scarce
+annotator time, and it is what I have set the work up to do.
+
+% ----------------------------------------------------------------------
+\begin{thebibliography}{9}
+\small
+
+\bibitem{sennrich2016}
+R.~Sennrich, B.~Haddow, and A.~Birch.
+\newblock Controlling Politeness in Neural Machine Translation via Side Constraints.
+\newblock In \emph{NAACL-HLT}, pages 35--40, 2016.
+
+\bibitem{niu2017}
+X.~Niu, M.~Martindale, and M.~Carpuat.
+\newblock A Study of Style in Machine Translation: Controlling the Formality of
+Machine Translation Output.
+\newblock In \emph{EMNLP}, pages 2814--2819, 2017.
+
+\bibitem{niu2020}
+X.~Niu and M.~Carpuat.
+\newblock Controlling Neural Machine Translation Formality with Synthetic Supervision.
+\newblock In \emph{AAAI}, pages 8568--8575, 2020.
+
+\bibitem{bawden2018}
+R.~Bawden, R.~Sennrich, A.~Birch, and B.~Haddow.
+\newblock Evaluating Discourse Phenomena in Neural Machine Translation.
+\newblock In \emph{NAACL-HLT}, pages 1304--1313, 2018.
+
+\bibitem{voita2019a}
+E.~Voita, R.~Sennrich, and I.~Titov.
+\newblock When a Good Translation is Wrong in Context: Context-Aware Machine
+Translation Improves on Deixis, Ellipsis, and Lexical Cohesion.
+\newblock In \emph{ACL}, pages 1198--1212, 2019.
+
+\bibitem{voita2019b}
+E.~Voita, R.~Sennrich, and I.~Titov.
+\newblock Context-Aware Monolingual Repair for Neural Machine Translation.
+\newblock In \emph{EMNLP-IJCNLP}, pages 877--886, 2019.
+
+\bibitem{agrawal2024}
+S.~Agrawal, A.~Farajian, P.~Fernandes, R.~Rei, and A.~F.~T.~Martins.
+\newblock Assessing the Role of Context in Chat Translation Evaluation: Is Context
+Helpful and Under What Conditions?
+\newblock \emph{Transactions of the ACL}, 12:1250--1267, 2024.
+
+\end{thebibliography}
+
+\end{document}

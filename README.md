@@ -27,8 +27,11 @@ for the full set of research questions and hypotheses.
 
 ## Initial Scope
 
-- **Language direction:** Hindi or Hinglish → English (Telugu → English kept as a possible
-  second-stage extension)
+- **Language direction:** Hindi and naturally occurring Hinglish → English, treated as two
+  distinct dataset values (Telugu → English kept as a possible second-stage extension).
+  Finalized in Week 2 — see
+  [docs/project/language_scope_decision.md](docs/project/language_scope_decision.md). This
+  setting is **not** representative of Indian languages generally.
 - **Pilot size:** 30–50 items
 - **Full benchmark target:** 300–500 items
 - **Context window:** 1–3 previous dialogue turns per item, each item recording whether
@@ -53,15 +56,20 @@ and LLM judges validated against human scores. See
 
 ```text
 docs/
-  project/         Research scope, research questions, benchmark blueprint
-  planning/        Weekly plans and summaries (week_01/)
+  project/         Research scope, research questions, blueprint, language decision
+  planning/        Weekly plans and summaries (week_01/, week_02/)
   literature/      Paper notes, groupings, cross-paper synthesis, takeaways
 references/
   papers/          Source PDFs for the reviewed literature
-benchmark/         Schema, guidelines, examples, pilot, and dataset splits (scaffold)
+benchmark/
+  schema/          JSON Schema, field reference, label and severity definitions
+  guidelines/      Annotation, contrastive-item, adjudication, evaluation, training
+  examples/        Worked example items with field-by-field explanations
+  pilot/           47 draft pilot items, templates, plan, issues, statistics
+  data/            Dataset splits (empty until the pilot is validated)
+scripts/           Validation, statistics, annotation-sheet and agreement tooling
 experiments/       Prompts, configs, model outputs, logs (scaffold)
 evaluation/        Semantic/pragmatic/contrastive metrics, human & LLM judging (scaffold)
-scripts/           Data processing and evaluation scripts (scaffold)
 results/           Tables, figures, reports, error analysis (scaffold)
 paper/             Report/paper sections and figures (scaffold)
 ```
@@ -94,6 +102,40 @@ implementation decisions drawn from them.
 the benchmark blueprint are finalized (see
 [docs/planning/week_01/week_1_summary.md](docs/planning/week_01/week_1_summary.md)).
 
-**Next:** pilot dataset construction — finalize the language setting, write annotation
-guidelines, build 30–50 pilot items with validated contrastive negatives, run initial
-translation baselines, and conduct pilot annotation with native speakers.
+**Week 2 complete — pilot benchmark constructed, not yet validated.**
+
+| Delivered | |
+|---|---|
+| Language decision | Hindi and Hinglish → English, finalized and documented |
+| Annotation schema | Version `0.1.0` as JSON Schema draft 2020-12, plus full field and label documentation |
+| Guidelines | Annotation, contrastive-item, adjudication, human-evaluation and training documents |
+| Pilot dataset | 47 draft items — 14 politeness/formality, 14 indirect request/refusal, 12 stance/emotion, 7 code-switching; 26 Hindi, 21 Hinglish. 8 are context-independent controls |
+| Templates | Annotation, item-review and adjudication CSVs |
+| Tooling | Schema/JSONL validation, dataset statistics, annotation-sheet generation, inter-annotator agreement |
+| Tests | 41, covering validation and the agreement statistics |
+
+> **Nothing in the pilot dataset has been validated by a human.** Every item carries
+> `review_status: NEEDS_NATIVE_REVIEW`. No annotation has taken place, no inter-annotator
+> agreement has been measured, and no translation systems have been run. Known problems with
+> the draft items are recorded in
+> [benchmark/pilot/pilot_issues.md](benchmark/pilot/pilot_issues.md).
+
+### Running the tooling
+
+```bash
+python -m pip install -r requirements.txt
+
+python scripts/validate_schema.py
+python scripts/validate_jsonl.py benchmark/pilot/pilot_items_v1.jsonl
+python scripts/generate_dataset_statistics.py benchmark/pilot/pilot_items_v1.jsonl
+python scripts/create_annotation_sheet.py benchmark/pilot/pilot_items_v1.jsonl
+python -m unittest discover scripts/tests
+```
+
+Requires Python 3.9+ with `jsonschema`. See [scripts/README.md](scripts/README.md).
+
+**Next:** recruit native-speaker annotators, run pilot Stage 1 item review followed by
+Stage 2 rating, measure agreement, revise the schema to `0.2.0` in light of the findings,
+and only then run translation baselines. Details in
+[benchmark/pilot/pilot_plan.md](benchmark/pilot/pilot_plan.md) and
+[docs/planning/week_02/](docs/planning/week_02/).
