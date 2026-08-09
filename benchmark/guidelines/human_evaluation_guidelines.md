@@ -158,8 +158,14 @@ target is English, the switch itself cannot survive; judge whether the *function
 does — the authority, intimacy, irony or quotative framing it carried. Where the
 source has no meaningful switch, use `NOT_APPLICABLE`.
 
-**Naturalness.** Would a fluent English speaker produce this? Rate the English, not
-the fidelity.
+**Naturalness.** Would a fluent speaker of **Indian English** produce this? Rate the
+English, not the fidelity. The benchmark targets Indian English, so judge against
+the standard educated register used in Indian professional and everyday settings,
+not a British or American standard. A rendering that is natural in Indian English
+scores high even if it would sound slightly unusual elsewhere, and one that sounds
+foreign in Indian English scores lower even if it is impeccable British or American
+English. See
+[../../docs/project/language_scope_decision.md](../../docs/project/language_scope_decision.md).
 
 ---
 

@@ -271,14 +271,23 @@ Ask, in this order:
 2. **Does it perform the same act?** A request stays a request.
 3. **Does it project the same relationship?** Same level of respect and distance.
 4. **Does it carry the same attitude?** Same warmth, irritation, reluctance.
-5. **Does it sound like something a person would say?**
+5. **Does it sound like something a person would say in Indian English?**
+
+**Target variety: Indian English.** The benchmark translates into Indian English,
+so judge the references against the standard educated register used in Indian
+professional and everyday settings, not a British or American standard. The pilot
+references were drafted before this was decided, and many lean toward a generic
+informal register, so expect to adjust them. When a reference is not natural Indian
+English, **supply an Indian-English alternative in the notes** rather than only
+flagging it. Conforming the reference set to Indian English is one of the main
+things this review pass is for.
 
 A reference can be acceptable without being the only good option. If you would
 have translated it differently but the version given is defensible, accept it and
 put your alternative in the notes. We collect those.
 
 **Reject a reference** when it changes the speech act, flips the politeness level,
-reverses the stance, or is not natural English. Say which of those it is.
+reverses the stance, or is not natural Indian English. Say which of those it is.
 
 ---
 

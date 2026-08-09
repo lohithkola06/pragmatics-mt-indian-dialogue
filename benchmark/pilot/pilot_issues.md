@@ -123,14 +123,12 @@ subtitle data, with licence checks recorded before any item is added.
 ### Issue 4 — Is code-switching testable with an English target?
 
 **Severity:** high
-**Status:** open, unresolved
-
-This is the most serious conceptual problem in the dataset.
+**Status:** RESOLVED — keep the category. Testability is now a pilot measurement.
 
 A Hindi–English switch cannot survive into a monolingual English translation. The
-six `CSW` items therefore do not test whether the *switch* is preserved — they test
-whether the **footing shift the switch performed** survives: authority, intimacy,
-irony, quotative framing.
+seven `CSW` items therefore do not test whether the *switch* is preserved — they
+test whether the **footing shift the switch performed** survives: authority,
+intimacy, irony, quotative framing.
 
 That may be a fair test. It may also be asking translators to preserve something
 English has no direct means of marking, in which case low scores would reflect a
@@ -139,11 +137,15 @@ limitation of the target language rather than a system failure.
 `HNG_CSW_004` is the clearest case: the switch is only perceptible *because* the
 context turn is in English.
 
-**Proposed action:** explicit native-speaker and supervisor judgement on whether
-the category is well-posed. If it is not, options are to drop it, restrict it to
-functions expressible in English (sarcasm, quotation), or add a Hindi-target
-condition. Recorded as open question 3 in
-[../schema/schema_version.md](../schema/schema_version.md).
+**Decision (supervisor).** Keep the code-switching category. The conceptual worry
+above does not go away, so it is converted from a go/no-go question into something
+the pilot measures directly: the test is whether annotators can score
+`code_switch_preservation` on the footing shift with acceptable agreement. If
+agreement on that dimension is poor while it is acceptable elsewhere, that is
+evidence the category is not well-posed against an English target, and it gets
+revisited for `0.2.0` (options then would be narrowing to functions English can
+express, such as sarcasm and quotation, or adding a Hindi-target condition). For
+now nothing in the dataset changes; the seven items stand as written.
 
 ### Issue 5 — Politeness granularity is untested
 
@@ -235,21 +237,33 @@ later schema version. Not blocking for the pilot.
 ### Issue 10 — The English of the reference translations is unexamined
 
 **Severity:** medium
-**Status:** open
+**Status:** RESOLVED — target variety is Indian English. References still need a
+native pass to conform.
 
 The reference translations use forms like "No man, I won't be able to make it" and
 "Ha, that's exactly what I'd expect from you". These lean toward a general
 informal English register.
 
-Nobody has decided **which variety of English the benchmark targets.** Indian
-English has its own conventions for politeness, address and formality, and a
+Indian English has its own conventions for politeness, address and formality, and a
 translation natural in Indian English may read as odd in British or American
-English — and the reverse. Since the whole benchmark is about social meaning in
+English, and the reverse. Since the whole benchmark is about social meaning in
 English output, this is not a cosmetic question.
 
-**Proposed action:** an explicit decision, recorded in the language scope document,
-on the target English variety. Evaluators should be told which variety to judge
-against.
+**Decision (supervisor).** The benchmark targets **Indian English**. This is now
+recorded as the target variety in
+[../../docs/project/language_scope_decision.md](../../docs/project/language_scope_decision.md)
+and evaluators are instructed to judge naturalness against it in
+[../guidelines/human_evaluation_guidelines.md](../guidelines/human_evaluation_guidelines.md)
+and [../guidelines/annotation_guidelines.md](../guidelines/annotation_guidelines.md).
+
+**Still open.** The decision does not retroactively make the 47 existing references
+Indian English. They were written by one non-native author in a general informal
+register, and rewriting all of them into Indian English is a native-speaker task,
+not something to do mechanically without risking caricature. So the references
+carry forward as-is into Stage 1 review, where reviewers now have an explicit extra
+criterion: is each reference natural **in Indian English**, and if not, supply an
+Indian-English alternative. Conforming the reference set is expected output of the
+pilot, not a precondition of it.
 
 ### Issue 11 — Minimal pairs must not be split across data splits
 
@@ -307,12 +321,14 @@ Ordered by how much the pilot depends on it:
 |---|---|---|
 | 1 | Confirm the source utterances are natural | Native speakers |
 | 2 | Confirm each contrastive translation is genuinely wrong in context | Native speakers |
-| 3 | Decide whether the code-switching category is well-posed (Issue 4) | Native speakers + supervisor |
+| 3 | Conform the reference translations to Indian English (Issue 10) | Native speakers |
 | 4 | Re-rate severity independently (Issue 2) | Native speakers |
-| 5 | Decide the target English variety (Issue 10) | Supervisor |
+| 5 | Score `code_switch_preservation`; low agreement flags Issue 4 | Measured from annotation |
 | 6 | Re-check every `REQUIRED` context label (Issue 1) | Native speakers |
 | 7 | Confirm or merge politeness levels (Issue 5) | Measured from annotation |
 | 8 | Confirm stance/emotion separability (Issue 6) | Measured from annotation |
 | 9 | Establish provenance for natural data (Issue 3) | Supervisor |
 
-None of this can be produced without people. None of it has been.
+Two supervisor decisions have now been made: keep the code-switching category
+(Issue 4), and target **Indian English** (Issue 10). Everything remaining above
+needs people, and none of it has been done yet.
