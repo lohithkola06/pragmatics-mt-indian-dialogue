@@ -1,0 +1,14 @@
+# Python dependencies for the Pragmatics-Preserving MT benchmark tooling.
+# Target: Python 3.11 or later.
+#
+# Install with:
+#   python -m pip install -r requirements.txt
+
+# Required: JSON Schema (draft 2020-12) validation of benchmark items.
+jsonschema>=4.0
+
+# Optional. The scripts in scripts/ are written against the standard library
+# only, so neither of these is needed to run the Week 2 validation workflow.
+# They are listed for later analysis work (metric correlation, modelling).
+# pandas>=2.0
+# scikit-learn>=1.3

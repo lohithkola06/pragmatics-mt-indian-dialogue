@@ -1,0 +1,457 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/pragmatics-mt-indian-dialogue/benchmark/schema/item_schema.json",
+  "title": "Pragmatics-Preserving MT Benchmark Item",
+  "description": "Schema for a single benchmark item in the Pragmatics-Preserving Machine Translation for Indian Dialogue benchmark. Schema version 0.1.0. See benchmark/schema/annotation_schema.md for field-by-field documentation.",
+  "type": "object",
+  "additionalProperties": false,
+
+  "$defs": {
+    "dialogueTurn": {
+      "type": "object",
+      "description": "A single dialogue turn, used for both context turns and the source utterance.",
+      "additionalProperties": false,
+      "required": ["turn_id", "speaker_id", "speaker_role", "text"],
+      "properties": {
+        "turn_id": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "1-based position of this turn within the item's dialogue."
+        },
+        "speaker_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Short anonymous speaker label, e.g. 'A' or 'B'. Never a real name."
+        },
+        "speaker_role": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Social role of the speaker, e.g. 'Student', 'Manager', 'Younger sibling'."
+        },
+        "text": {
+          "type": "string",
+          "minLength": 1,
+          "description": "The utterance text in romanized Hindi or Hinglish."
+        }
+      }
+    }
+  },
+
+  "required": [
+    "schema_version",
+    "item_id",
+    "language",
+    "language_variety",
+    "translation_direction",
+    "source_type",
+    "source_reference",
+    "license",
+    "review_status",
+    "context",
+    "source_utterance",
+    "literal_gloss",
+    "listener_role",
+    "relationship",
+    "relative_status",
+    "familiarity",
+    "primary_phenomenon",
+    "secondary_phenomena",
+    "speech_act",
+    "politeness_level",
+    "formality_level",
+    "stance",
+    "emotion",
+    "indirectness",
+    "code_switch_function",
+    "context_required",
+    "context_status",
+    "minimum_context_window",
+    "relevant_context_turns",
+    "context_explanation",
+    "preservation_requirement",
+    "reference_translations",
+    "acceptable_variants",
+    "contrastive_translation",
+    "contrastive_error",
+    "contrastive_error_category",
+    "severity",
+    "creator_notes",
+    "annotator_notes",
+    "annotator_ids",
+    "adjudicator_id",
+    "agreement_status",
+    "annotation_version"
+  ],
+
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Semantic version of the item schema this item conforms to."
+    },
+    "item_id": {
+      "type": "string",
+      "pattern": "^(HIN|HNG)_(POL|IND|STA|CSW)_[0-9]{3}$",
+      "description": "Unique item identifier: {HIN|HNG}_{POL|IND|STA|CSW}_{NNN}. HIN=Hindi, HNG=Hinglish. POL=politeness/formality, IND=indirect request/refusal, STA=stance/emotion, CSW=code-switching."
+    },
+    "language": {
+      "enum": ["Hindi", "Hinglish"],
+      "description": "Language of the source utterance. Hindi and Hinglish are distinct values."
+    },
+    "language_variety": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Free-text variety description, e.g. 'Standard Hindi (romanized)' or 'Urban Hinglish (code-mixed)'."
+    },
+    "translation_direction": {
+      "enum": ["Hindi-English", "Hinglish-English"],
+      "description": "Source-target direction. Must agree with the language field."
+    },
+    "source_type": {
+      "enum": ["NATURAL", "ELICITED", "MINIMAL_PAIR", "ADAPTED"],
+      "description": "How the item was produced. NATURAL and ADAPTED require a documented source_reference."
+    },
+    "source_reference": {
+      "type": ["string", "null"],
+      "description": "Provenance for NATURAL or ADAPTED items. Must be null when provenance cannot be documented."
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Licensing status of the source material. Use 'TO_BE_CONFIRMED' until licensing is verified."
+    },
+    "review_status": {
+      "enum": ["DRAFT", "NEEDS_NATIVE_REVIEW", "REVISED", "APPROVED", "REJECTED"],
+      "description": "Human review state. Only a native speaker may move an item to APPROVED."
+    },
+
+    "context": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 3,
+      "items": { "$ref": "#/$defs/dialogueTurn" },
+      "description": "Zero to three previous dialogue turns. Zero turns is allowed only for context-independent items."
+    },
+    "source_utterance": {
+      "$ref": "#/$defs/dialogueTurn",
+      "description": "The utterance to be translated. Its text must be non-empty."
+    },
+    "literal_gloss": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A close, deliberately flat English gloss of the source utterance, for non-speakers of the source language."
+    },
+    "listener_role": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Social role of the addressee of the source utterance."
+    },
+    "relationship": {
+      "enum": [
+        "FAMILY",
+        "FRIEND",
+        "ACADEMIC",
+        "WORKPLACE",
+        "SERVICE",
+        "INSTITUTIONAL",
+        "STRANGER",
+        "OTHER"
+      ],
+      "description": "Type of social relationship between speaker and listener. Specific roles live in speaker_role and listener_role."
+    },
+    "relative_status": {
+      "enum": ["SPEAKER_HIGHER", "EQUAL", "SPEAKER_LOWER", "UNKNOWN"],
+      "description": "Social status of the speaker relative to the listener."
+    },
+    "familiarity": {
+      "enum": ["LOW", "MEDIUM", "HIGH"],
+      "description": "How well the speaker and listener know each other."
+    },
+
+    "primary_phenomenon": {
+      "enum": [
+        "POLITENESS_FORMALITY",
+        "INDIRECT_REQUEST_REFUSAL",
+        "STANCE_EMOTION",
+        "CODE_SWITCHING"
+      ],
+      "description": "The single pragmatic category this item is built to test. Must agree with the item_id category code."
+    },
+    "secondary_phenomena": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "POLITENESS",
+          "FORMALITY",
+          "INDIRECTNESS",
+          "STANCE",
+          "EMOTION",
+          "CODE_SWITCHING",
+          "SPEECH_ACT",
+          "RELATIONSHIP"
+        ]
+      },
+      "description": "Additional pragmatic dimensions that are also at stake. May be empty."
+    },
+    "speech_act": {
+      "enum": [
+        "REQUEST",
+        "COMMAND",
+        "SUGGESTION",
+        "REFUSAL",
+        "INDIRECT_REFUSAL",
+        "WARNING",
+        "APOLOGY",
+        "COMPLAINT",
+        "INVITATION",
+        "TEASING",
+        "INSULT",
+        "JOKE",
+        "AGREEMENT",
+        "DISAGREEMENT",
+        "REASSURANCE",
+        "CRITICISM",
+        "INFORMATION",
+        "QUESTION"
+      ],
+      "description": "The intended communicative function of the source utterance."
+    },
+    "politeness_level": {
+      "enum": [
+        "HIGHLY_RESPECTFUL",
+        "RESPECTFUL",
+        "NEUTRAL",
+        "FAMILIAR",
+        "DISRESPECTFUL",
+        "NOT_APPLICABLE"
+      ],
+      "description": "Ordinal degree of respect/deference encoded in the utterance."
+    },
+    "formality_level": {
+      "enum": ["FORMAL", "NEUTRAL", "INFORMAL", "HIGHLY_INFORMAL", "NOT_APPLICABLE"],
+      "description": "Register of the utterance. Kept separate from politeness."
+    },
+    "stance": {
+      "enum": [
+        "NEUTRAL",
+        "WARM",
+        "CARING",
+        "PLAYFUL",
+        "IRRITATED",
+        "DISMISSIVE",
+        "DEFERENTIAL",
+        "RELUCTANT",
+        "SYMPATHETIC",
+        "SKEPTICAL",
+        "APPROVING",
+        "DISAPPROVING"
+      ],
+      "description": "The speaker's attitude toward the listener, proposition, or situation."
+    },
+    "emotion": {
+      "enum": [
+        "NEUTRAL",
+        "HAPPY",
+        "ANGRY",
+        "SAD",
+        "WORRIED",
+        "EXCITED",
+        "FRUSTRATED",
+        "EMBARRASSED",
+        "AFRAID",
+        "SURPRISED"
+      ],
+      "description": "The affective state expressed by the speaker."
+    },
+    "indirectness": {
+      "enum": ["DIRECT", "MODERATELY_INDIRECT", "HIGHLY_INDIRECT", "NOT_APPLICABLE"],
+      "description": "Whether the utterance communicates its intent explicitly or through implication."
+    },
+    "code_switch_function": {
+      "oneOf": [
+        {
+          "enum": [
+            "EMPHASIS",
+            "HUMOR",
+            "IDENTITY",
+            "INTIMACY",
+            "AUTHORITY",
+            "TECHNICAL_TERMINOLOGY",
+            "EMOTIONAL_INTENSITY",
+            "SARCASM",
+            "QUOTATION",
+            "NOT_APPLICABLE"
+          ]
+        },
+        { "type": "null" }
+      ],
+      "description": "Discourse function of a language switch. Use NOT_APPLICABLE or null when the switch carries no pragmatic load."
+    },
+
+    "context_required": {
+      "type": "boolean",
+      "description": "True when the utterance cannot be correctly interpreted without the context turns."
+    },
+    "context_status": {
+      "enum": ["NOT_REQUIRED", "HELPFUL", "REQUIRED"],
+      "description": "Three-way judgment of how much the context matters for interpretation."
+    },
+    "minimum_context_window": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "description": "Smallest number of previous turns needed for a correct reading. Must not exceed the number of context turns."
+    },
+    "relevant_context_turns": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "integer", "minimum": 1 },
+      "description": "turn_id values of the context turns that carry the disambiguating information. Required to be non-empty when context_status is REQUIRED."
+    },
+    "context_explanation": {
+      "type": "string",
+      "description": "Short prose explanation of what the context contributes. May be empty for NOT_REQUIRED items."
+    },
+
+    "preservation_requirement": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Plain statement of what an acceptable translation must preserve."
+    },
+    "reference_translations": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "One or more pragmatically acceptable English translations."
+    },
+    "acceptable_variants": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Further translations judged acceptable, recorded separately from the primary references. May be empty."
+    },
+    "contrastive_translation": {
+      "type": "string",
+      "minLength": 1,
+      "description": "A semantically close but pragmatically wrong translation, minimally different from the reference."
+    },
+    "contrastive_error": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Explanation of exactly what pragmatic meaning the contrastive translation breaks."
+    },
+    "contrastive_error_category": {
+      "enum": [
+        "POLITENESS_ERROR",
+        "FORMALITY_ERROR",
+        "SPEECH_ACT_ERROR",
+        "STANCE_ERROR",
+        "EMOTION_ERROR",
+        "INDIRECTNESS_ERROR",
+        "CODE_SWITCH_ERROR",
+        "RELATIONSHIP_ERROR"
+      ],
+      "description": "The single pragmatic dimension the contrastive translation breaks."
+    },
+    "severity": {
+      "enum": ["MINOR", "MAJOR", "CRITICAL"],
+      "description": "How damaging the contrastive error is. See benchmark/schema/severity_guidelines.md."
+    },
+
+    "creator_notes": {
+      "type": "string",
+      "description": "Notes from whoever drafted the item, including known uncertainties."
+    },
+    "annotator_notes": {
+      "type": "string",
+      "description": "Notes added during annotation. Empty until an annotator fills it in."
+    },
+    "annotator_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 },
+      "description": "Pseudonymous annotator identifiers. Empty until the item is annotated. Never real personal information."
+    },
+    "adjudicator_id": {
+      "type": ["string", "null"],
+      "description": "Pseudonymous adjudicator identifier, or null when no adjudication has happened."
+    },
+    "agreement_status": {
+      "enum": ["NOT_ANNOTATED", "IN_PROGRESS", "AGREED", "DISAGREED", "ADJUDICATED"],
+      "description": "State of inter-annotator agreement for this item."
+    },
+    "annotation_version": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Version counter for the annotation record on this item."
+    }
+  },
+
+  "allOf": [
+    {
+      "$comment": "When context is REQUIRED, the item must actually carry context turns and name which ones matter.",
+      "if": {
+        "properties": { "context_status": { "const": "REQUIRED" } },
+        "required": ["context_status"]
+      },
+      "then": {
+        "properties": {
+          "context": { "minItems": 1 },
+          "relevant_context_turns": { "minItems": 1 },
+          "minimum_context_window": { "minimum": 1 },
+          "context_explanation": { "minLength": 1 }
+        }
+      }
+    },
+    {
+      "$comment": "Context-independent items must not claim a required context window.",
+      "if": {
+        "properties": { "context_status": { "const": "NOT_REQUIRED" } },
+        "required": ["context_status"]
+      },
+      "then": {
+        "properties": {
+          "context_required": { "const": false },
+          "minimum_context_window": { "const": 0 }
+        }
+      }
+    },
+    {
+      "$comment": "Code-switching items must name a real discourse function for the switch.",
+      "if": {
+        "properties": { "primary_phenomenon": { "const": "CODE_SWITCHING" } },
+        "required": ["primary_phenomenon"]
+      },
+      "then": {
+        "properties": {
+          "language": { "const": "Hinglish" },
+          "code_switch_function": {
+            "enum": [
+              "EMPHASIS",
+              "HUMOR",
+              "IDENTITY",
+              "INTIMACY",
+              "AUTHORITY",
+              "TECHNICAL_TERMINOLOGY",
+              "EMOTIONAL_INTENSITY",
+              "SARCASM",
+              "QUOTATION"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "$comment": "NATURAL and ADAPTED items require documented provenance.",
+      "if": {
+        "properties": { "source_type": { "enum": ["NATURAL", "ADAPTED"] } },
+        "required": ["source_type"]
+      },
+      "then": {
+        "properties": {
+          "source_reference": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  ]
+}
