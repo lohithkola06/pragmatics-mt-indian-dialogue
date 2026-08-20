@@ -176,17 +176,25 @@ In priority order. None of this can be produced by drafting tools.
    `MAJOR`.
 4. Re-check every `context_status: REQUIRED` label against the cover-the-context
    test.
-5. Judge whether the code-switching category works at all with an English target.
-6. Complete Stage 2 rating so agreement can be measured.
+5. Conform the reference translations to **Indian English**, supplying alternatives
+   where the current wording is not natural in that variety.
+6. Complete Stage 2 rating so agreement can be measured. Agreement on
+   `code_switch_preservation` is now the test of whether the code-switching category
+   is well-posed against an English target.
 
-**Needs a supervisor decision:**
+**Supervisor decisions (now made):**
 
-7. Whether the code-switching category should be kept, narrowed, or dropped.
-8. Which variety of English the benchmark targets — Indian English conventions
-   differ from British and American ones, and this affects every reference
-   translation.
+7. Code-switching category: **kept.** Testability becomes a pilot measurement
+   rather than a precondition. See `pilot_issues.md` Issue 4.
+8. Target English variety: **Indian English.** Recorded in
+   `language_scope_decision.md`; evaluators judge naturalness against it. See
+   `pilot_issues.md` Issue 10.
+
+**Still needs a supervisor decision:**
+
 9. Whether to source naturally occurring dialogue, and from where.
-10. Whether five politeness levels is the right granularity.
+10. Whether five politeness levels is the right granularity (or measure it in the
+    pilot).
 
 **Needs recruitment:**
 

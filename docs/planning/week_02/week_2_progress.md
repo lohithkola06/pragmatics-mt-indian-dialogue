@@ -289,9 +289,12 @@ never in scope for this week.
 contrastive translations, independent severity re-rating, re-checking the
 `REQUIRED` context labels, and Stage 2 rating so agreement can finally be measured.
 
-**A supervisor decision**, on: whether the code-switching category is well-posed
-with an English target, which variety of English to target, whether to source
-natural dialogue and from where, and whether five politeness levels is right.
+**Supervisor decisions made:** keep the code-switching category (its testability
+against an English target is now something the pilot measures via
+`code_switch_preservation` agreement), and target **Indian English** (recorded in
+the language scope decision, with evaluators judging naturalness against it). Still
+open for the supervisor: whether to source natural dialogue and from where, and
+whether five politeness levels is right.
 
 **Recruitment**, of two annotators plus one adjudicator, ideally with different
 regional backgrounds — otherwise region-dependence is undetectable.

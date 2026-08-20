@@ -30,6 +30,32 @@ research question in its own right rather than a bookkeeping detail.
 Telugu → English remains a **possible second-stage extension** and is not part of
 the first release.
 
+### The target variety: Indian English
+
+The benchmark translates **into Indian English** (supervisor decision, made after
+the pilot was drafted). This matters because the benchmark judges social meaning in
+the output, and Indian English has its own conventions for politeness, address, and
+formality. A translation that is natural in Indian English can read as odd in
+British or American English, and the reverse, so leaving the target variety
+unstated would make evaluators disagree for the wrong reason.
+
+Consequences:
+
+- Evaluators judge translation naturalness against **Indian English**, not a
+  generic or British/American standard. This is stated in
+  [../../benchmark/guidelines/human_evaluation_guidelines.md](../../benchmark/guidelines/human_evaluation_guidelines.md)
+  and [../../benchmark/guidelines/annotation_guidelines.md](../../benchmark/guidelines/annotation_guidelines.md).
+- The 47 pilot references were drafted by a single non-native author in a general
+  informal register **before** this decision. They are **not** assumed to already
+  be Indian English. Conforming them is an explicit criterion in Stage 1 native
+  review, not a mechanical rewrite done in advance, because producing authentic
+  Indian English without lapsing into caricature is a native-speaker task. See
+  Issue 10 in [../../benchmark/pilot/pilot_issues.md](../../benchmark/pilot/pilot_issues.md).
+- "Indian English" here means the standard educated register used in Indian
+  professional and everyday settings, not any single regional variety. Where a
+  reference could plausibly differ by region, that is recorded rather than resolved,
+  consistent with the disagreement-preserving stance in section 7.
+
 ---
 
 ## 2. An important limitation, stated up front

@@ -69,9 +69,18 @@ These are recorded rather than resolved. The pilot exists partly to answer them.
 3. Is `CODE_SWITCHING` testable at all when the target language is English, given
    that the switch cannot survive into a monolingual English translation? Several
    pilot items depend on preserving the *footing shift* rather than the switch
-   itself.
+   itself. **Supervisor decision: keep the category.** The question is not closed
+   so much as converted into a measurement: agreement on `code_switch_preservation`
+   in the pilot is the test, and poor agreement there would reopen it for `0.2.0`.
+   See [../pilot/pilot_issues.md](../pilot/pilot_issues.md), Issue 4.
 4. Does the `TEASING` / `INSULT` boundary produce usable agreement?
 5. Is `relationship` as a coarse enum sufficient, or does it need to be free text?
+
+**Resolved outside the schema.** The target English variety is now **Indian
+English** (supervisor decision). It does not change any schema field, but it sets
+the standard evaluators judge naturalness against; see
+[../../docs/project/language_scope_decision.md](../../docs/project/language_scope_decision.md)
+and Issue 10 in the issues log.
 
 Findings go to [../pilot/pilot_issues.md](../pilot/pilot_issues.md), and any
 resulting change is released as `0.2.0`.
