@@ -1,0 +1,220 @@
+{
+  "_about": "Contract fixture shared by scripts/tests and annotation-app tests. The CSVs next to this file are rendered from it by scripts/build_annotation_app_data.py (render_stage2_csv / render_review_csv); the app's serializer must reproduce them byte for byte.",
+  "stage2_units": [
+    {
+      "candidate_id": "HIN_POL_005-A",
+      "item_id": "HIN_POL_005",
+      "sheet": {
+        "item_id": "HIN_POL_005",
+        "candidate_id": "HIN_POL_005-A",
+        "language": "Hindi",
+        "primary_phenomenon": "POLITENESS_FORMALITY",
+        "dialogue_context": "1. A (Customer): Mera order abhi tak nahi aaya hai.\n2. B (Support agent): Sir, aapka order abhi process ho raha hai.",
+        "source_utterance": "3. A (Customer): Theek hai, par mujhe pandrah din ho gaye hain intezaar karte hue.",
+        "literal_gloss": "All right, but it has been fifteen days that I have been waiting.",
+        "speaker_role": "Customer",
+        "listener_role": "Support agent",
+        "relationship": "SERVICE",
+        "relative_status": "EQUAL",
+        "familiarity": "LOW",
+        "context_status": "REQUIRED",
+        "preservation_requirement": "The translation must keep the complaint restrained and civil. The speaker is frustrated but is deliberately not being rude to a service agent.",
+        "candidate_translation": "That's fine, but I've been waiting fifteen days now."
+      }
+    },
+    {
+      "candidate_id": "HNG_POL_002-B",
+      "item_id": "HNG_POL_002",
+      "sheet": {
+        "item_id": "HNG_POL_002",
+        "candidate_id": "HNG_POL_002-B",
+        "language": "Hinglish",
+        "primary_phenomenon": "POLITENESS_FORMALITY",
+        "dialogue_context": "(no previous turns - this item is interpretable on its own)",
+        "source_utterance": "1. A (Customer): Bhaiya, thoda discount kar dijiye na.",
+        "literal_gloss": "Brother, please give a little discount.",
+        "speaker_role": "Customer",
+        "listener_role": "Shopkeeper",
+        "relationship": "SERVICE",
+        "relative_status": "EQUAL",
+        "familiarity": "LOW",
+        "context_status": "NOT_REQUIRED",
+        "preservation_requirement": "The translation must preserve the friendly, coaxing register of ordinary bargaining. The kinship address term 'bhaiya' and the softener 'na' make this a warm appeal rather than a demand.",
+        "candidate_translation": "Give me a discount."
+      }
+    },
+    {
+      "candidate_id": "HNG_CSW_004-A",
+      "item_id": "HNG_CSW_004",
+      "sheet": {
+        "item_id": "HNG_CSW_004",
+        "candidate_id": "HNG_CSW_004-A",
+        "language": "Hinglish",
+        "primary_phenomenon": "CODE_SWITCHING",
+        "dialogue_context": "1. A (Colleague): Everything okay? Meeting mein tum kaafi quiet the.",
+        "source_utterance": "2. B (Colleague): Arre kuch nahi yaar, bas thoda ghar ki tension hai.",
+        "literal_gloss": "Oh nothing friend, just a little tension at home.",
+        "speaker_role": "Colleague",
+        "listener_role": "Colleague",
+        "relationship": "WORKPLACE",
+        "relative_status": "EQUAL",
+        "familiarity": "HIGH",
+        "context_status": "REQUIRED",
+        "preservation_requirement": "The translation must preserve the move into a closer, more personal register. The reply should read as confiding in a friend, not as a formal answer to a workplace enquiry.",
+        "candidate_translation": "Ah, it's nothing, yaar — just some stuff going on at home."
+      }
+    }
+  ],
+  "stage2_ratings": {
+    "ANN_01": {
+      "HIN_POL_005-A": {
+        "source_naturalness": "3",
+        "semantic_adequacy": "3",
+        "speech_act_preservation": "3",
+        "politeness_preservation": "3",
+        "formality_preservation": "2",
+        "stance_preservation": "3",
+        "emotion_preservation": "2",
+        "indirectness_preservation": "3",
+        "code_switch_preservation": "NOT_APPLICABLE",
+        "relationship_appropriateness": "3",
+        "translation_naturalness": "3",
+        "overall_pragmatic_preservation": "3",
+        "uncertainty_label": "",
+        "notes": ""
+      },
+      "HNG_POL_002-B": {
+        "source_naturalness": "3",
+        "semantic_adequacy": "3",
+        "speech_act_preservation": "1",
+        "politeness_preservation": "0",
+        "formality_preservation": "2",
+        "stance_preservation": "1",
+        "emotion_preservation": "2",
+        "indirectness_preservation": "1",
+        "code_switch_preservation": "NOT_APPLICABLE",
+        "relationship_appropriateness": "1",
+        "translation_naturalness": "3",
+        "overall_pragmatic_preservation": "1",
+        "uncertainty_label": "",
+        "notes": "Drops \"bhaiya\" and \"na\", so it reads as an order, not a request.\nWould be fine said to a peer, though."
+      },
+      "HNG_CSW_004-A": {
+        "source_naturalness": "3",
+        "semantic_adequacy": "3",
+        "speech_act_preservation": "3",
+        "politeness_preservation": "3",
+        "formality_preservation": "2",
+        "stance_preservation": "2",
+        "emotion_preservation": "3",
+        "indirectness_preservation": "3",
+        "code_switch_preservation": "2",
+        "relationship_appropriateness": "3",
+        "translation_naturalness": "2",
+        "overall_pragmatic_preservation": "2",
+        "uncertainty_label": "UNCERTAIN",
+        "notes": "Not sure the switch into Hindi is intimate here; ठीक है either way."
+      }
+    },
+    "ANN_02": {
+      "HIN_POL_005-A": {
+        "source_naturalness": "3",
+        "semantic_adequacy": "3",
+        "speech_act_preservation": "3",
+        "politeness_preservation": "3",
+        "formality_preservation": "3",
+        "stance_preservation": "3",
+        "emotion_preservation": "2",
+        "indirectness_preservation": "3",
+        "code_switch_preservation": "NOT_APPLICABLE",
+        "relationship_appropriateness": "3",
+        "translation_naturalness": "3",
+        "overall_pragmatic_preservation": "3",
+        "uncertainty_label": "",
+        "notes": ""
+      },
+      "HNG_POL_002-B": {
+        "source_naturalness": "2",
+        "semantic_adequacy": "3",
+        "speech_act_preservation": "1",
+        "politeness_preservation": "1",
+        "formality_preservation": "2",
+        "stance_preservation": "1",
+        "emotion_preservation": "2",
+        "indirectness_preservation": "1",
+        "code_switch_preservation": "NOT_APPLICABLE",
+        "relationship_appropriateness": "0",
+        "translation_naturalness": "3",
+        "overall_pragmatic_preservation": "1",
+        "uncertainty_label": "MULTIPLE_VALID_INTERPRETATIONS",
+        "notes": "Bargaining register; could be read as friendly, but I think it is curt."
+      }
+    }
+  },
+  "review_items": [
+    "HIN_POL_005",
+    "HNG_CSW_004"
+  ],
+  "reviews": {
+    "ANN_01": {
+      "HIN_POL_005": {
+        "source_is_natural": "YES",
+        "intended_interpretation_is_clear": "YES",
+        "reference_is_valid": "YES",
+        "contrastive_is_semantically_close": "YES",
+        "contrastive_is_pragmatically_wrong": "YES",
+        "primary_label_is_correct": "YES",
+        "context_label_is_correct": "YES",
+        "no_undocumented_cultural_assumption": "YES",
+        "reviewer_severity": "MAJOR",
+        "recommended_action": "ACCEPT",
+        "suggested_indian_english_reference": "",
+        "notes": ""
+      },
+      "HNG_CSW_004": {
+        "source_is_natural": "YES",
+        "intended_interpretation_is_clear": "UNSURE",
+        "reference_is_valid": "NO",
+        "contrastive_is_semantically_close": "YES",
+        "contrastive_is_pragmatically_wrong": "YES",
+        "primary_label_is_correct": "YES",
+        "context_label_is_correct": "YES",
+        "no_undocumented_cultural_assumption": "YES",
+        "reviewer_severity": "MINOR",
+        "recommended_action": "REVISE",
+        "suggested_indian_english_reference": "Nothing much yaar, just some tension at home.",
+        "notes": "Reference sounds British to me; \"stuff going on\" is not how I would put it."
+      }
+    },
+    "ANN_02": {
+      "HIN_POL_005": {
+        "source_is_natural": "YES",
+        "intended_interpretation_is_clear": "YES",
+        "reference_is_valid": "YES",
+        "contrastive_is_semantically_close": "YES",
+        "contrastive_is_pragmatically_wrong": "YES",
+        "primary_label_is_correct": "YES",
+        "context_label_is_correct": "YES",
+        "no_undocumented_cultural_assumption": "YES",
+        "reviewer_severity": "MAJOR",
+        "recommended_action": "ACCEPT",
+        "suggested_indian_english_reference": "",
+        "notes": ""
+      },
+      "HNG_CSW_004": {
+        "source_is_natural": "YES",
+        "intended_interpretation_is_clear": "YES",
+        "reference_is_valid": "UNSURE",
+        "contrastive_is_semantically_close": "YES",
+        "contrastive_is_pragmatically_wrong": "YES",
+        "primary_label_is_correct": "YES",
+        "context_label_is_correct": "NO",
+        "no_undocumented_cultural_assumption": "YES",
+        "reviewer_severity": "MAJOR",
+        "recommended_action": "REVISE",
+        "suggested_indian_english_reference": "",
+        "notes": "Context status should be HELPFUL, not REQUIRED."
+      }
+    }
+  }
+}

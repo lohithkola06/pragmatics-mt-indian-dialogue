@@ -1,0 +1,129 @@
+{
+  "dataset_fingerprint": "e054fd0cf34c4f88",
+  "dataset_path": "benchmark/pilot/pilot_items_v1.jsonl",
+  "item_count": 47,
+  "unit_count": 94,
+  "stage2_enabled": false,
+  "calibration_items": [
+    "HIN_POL_005",
+    "HIN_IND_009",
+    "HNG_IND_002",
+    "HNG_STA_001",
+    "HNG_CSW_003"
+  ],
+  "contact_instructions": "Use the contact details in the invitation you received from the researcher.",
+  "review_columns": [
+    "item_id",
+    "reviewer_id",
+    "source_is_natural",
+    "intended_interpretation_is_clear",
+    "reference_is_valid",
+    "contrastive_is_semantically_close",
+    "contrastive_is_pragmatically_wrong",
+    "primary_label_is_correct",
+    "context_label_is_correct",
+    "no_undocumented_cultural_assumption",
+    "reviewer_severity",
+    "recommended_action",
+    "suggested_indian_english_reference",
+    "notes"
+  ],
+  "stage2_columns": [
+    "item_id",
+    "candidate_id",
+    "language",
+    "primary_phenomenon",
+    "dialogue_context",
+    "source_utterance",
+    "literal_gloss",
+    "speaker_role",
+    "listener_role",
+    "relationship",
+    "relative_status",
+    "familiarity",
+    "context_status",
+    "preservation_requirement",
+    "candidate_translation",
+    "annotator_id",
+    "source_naturalness",
+    "semantic_adequacy",
+    "speech_act_preservation",
+    "politeness_preservation",
+    "formality_preservation",
+    "stance_preservation",
+    "emotion_preservation",
+    "indirectness_preservation",
+    "code_switch_preservation",
+    "relationship_appropriateness",
+    "translation_naturalness",
+    "overall_pragmatic_preservation",
+    "uncertainty_label",
+    "notes"
+  ],
+  "stage2_context_columns": [
+    "item_id",
+    "candidate_id",
+    "language",
+    "primary_phenomenon",
+    "dialogue_context",
+    "source_utterance",
+    "literal_gloss",
+    "speaker_role",
+    "listener_role",
+    "relationship",
+    "relative_status",
+    "familiarity",
+    "context_status",
+    "preservation_requirement",
+    "candidate_translation"
+  ],
+  "stage2_evaluation_columns": [
+    "annotator_id",
+    "source_naturalness",
+    "semantic_adequacy",
+    "speech_act_preservation",
+    "politeness_preservation",
+    "formality_preservation",
+    "stance_preservation",
+    "emotion_preservation",
+    "indirectness_preservation",
+    "code_switch_preservation",
+    "relationship_appropriateness",
+    "translation_naturalness",
+    "overall_pragmatic_preservation",
+    "uncertainty_label",
+    "notes"
+  ],
+  "docs": [
+    {
+      "file": "annotation_guidelines.md",
+      "title": "Annotation Guidelines",
+      "source_path": "benchmark/guidelines/annotation_guidelines.md"
+    },
+    {
+      "file": "human_evaluation_guidelines.md",
+      "title": "Human Evaluation Guidelines",
+      "source_path": "benchmark/guidelines/human_evaluation_guidelines.md"
+    },
+    {
+      "file": "annotator_training.md",
+      "title": "Annotator Training",
+      "source_path": "benchmark/guidelines/annotator_training.md"
+    },
+    {
+      "file": "contrastive_item_guidelines.md",
+      "title": "Contrastive Item Guidelines",
+      "source_path": "benchmark/guidelines/contrastive_item_guidelines.md"
+    },
+    {
+      "file": "label_definitions.md",
+      "title": "Label Definitions",
+      "source_path": "benchmark/schema/label_definitions.md"
+    },
+    {
+      "file": "severity_guidelines.md",
+      "title": "Severity Guidelines",
+      "source_path": "benchmark/schema/severity_guidelines.md"
+    }
+  ]
+}

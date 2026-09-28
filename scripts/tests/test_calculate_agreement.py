@@ -10,7 +10,10 @@ Run from the repository root with:
 
 from __future__ import annotations
 
+import contextlib
+import io
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -18,11 +21,18 @@ SCRIPTS_DIR = Path(__file__).resolve().parent.parent
 if str(SCRIPTS_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPTS_DIR))
 
+import calculate_agreement  # noqa: E402
 from calculate_agreement import (  # noqa: E402
+    apply_where,
     cohens_kappa,
+    detect_rating_columns,
+    find_duplicate_ratings,
     is_missing,
     krippendorff_alpha_nominal,
     percentage_agreement,
+    read_many,
+    read_rows,
+    uncertainty_usage,
 )
 
 
@@ -160,6 +170,134 @@ class TestMissingValues(unittest.TestCase):
         for value in ("0", "1", "2", "3", "UNCERTAIN"):
             with self.subTest(value=value):
                 self.assertFalse(is_missing(value))
+
+
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+
+class TestMultipleFilesAndFilters(unittest.TestCase):
+    """Features needed for per-annotator exports from the annotation app."""
+
+    def setUp(self) -> None:
+        self._tmp = tempfile.TemporaryDirectory()
+        self.tmp = Path(self._tmp.name)
+
+    def tearDown(self) -> None:
+        self._tmp.cleanup()
+
+    def write(self, name: str, text: str, bom: bool = False) -> Path:
+        path = self.tmp / name
+        data = text.encode("utf-8")
+        path.write_bytes((b"\xef\xbb\xbf" if bom else b"") + data)
+        return path
+
+    def test_bom_from_excel_does_not_corrupt_the_first_column(self) -> None:
+        path = self.write("bom.csv", "item_id,annotator_id,score\r\nX,ANN_01,3\r\n", bom=True)
+        rows, header = read_rows(path)
+        self.assertEqual(header[0], "item_id")
+        self.assertEqual(rows[0]["item_id"], "X")
+
+    def test_read_many_concatenates_files(self) -> None:
+        a = self.write("a.csv", "item_id,annotator_id,score\nX,ANN_01,3\n")
+        b = self.write("b.csv", "item_id,annotator_id,score\nX,ANN_02,2\n")
+        rows, header = read_many([a, b])
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(header, ["item_id", "annotator_id", "score"])
+
+    def test_read_many_rejects_mismatched_headers(self) -> None:
+        a = self.write("a.csv", "item_id,annotator_id,score\n")
+        b = self.write("b.csv", "item_id,annotator_id,other\n")
+        with self.assertRaises(ValueError):
+            read_many([a, b])
+
+    def test_duplicate_unit_annotator_pairs_are_found(self) -> None:
+        rows = [
+            {"u": "X", "a": "ANN_01"},
+            {"u": "X", "a": "ANN_01"},
+            {"u": "X", "a": "ANN_02"},
+        ]
+        self.assertEqual(find_duplicate_ratings(rows, "u", "a"), [("X", "ANN_01", 2)])
+
+    def test_unit_and_annotator_columns_are_never_rated(self) -> None:
+        header = ["item_id", "reviewer_id", "source_is_natural", "notes"]
+        rated = detect_rating_columns(header, exclude=("item_id", "reviewer_id"))
+        self.assertEqual(rated, ["source_is_natural"])
+
+    def test_uncertainty_and_suggestions_are_not_rated(self) -> None:
+        header = ["candidate_id", "annotator_id", "semantic_adequacy",
+                  "uncertainty_label", "suggested_indian_english_reference"]
+        self.assertEqual(detect_rating_columns(header), ["semantic_adequacy"])
+
+    def test_where_keeps_matching_rows(self) -> None:
+        rows = [{"lang": "Hindi"}, {"lang": "Hinglish"}, {"lang": " Hinglish "}]
+        kept = apply_where(rows, ["lang"], ["lang=Hinglish"])
+        self.assertEqual(len(kept), 2)
+
+    def test_where_rejects_unknown_column_and_bad_syntax(self) -> None:
+        with self.assertRaises(ValueError):
+            apply_where([], ["lang"], ["nope=1"])
+        with self.assertRaises(ValueError):
+            apply_where([], ["lang"], ["lang"])
+
+    def test_uncertainty_usage_counts_flags_per_annotator(self) -> None:
+        rows = [
+            {"annotator_id": "ANN_01", "uncertainty_label": "UNCERTAIN"},
+            {"annotator_id": "ANN_01", "uncertainty_label": ""},
+            {"annotator_id": "ANN_02", "uncertainty_label": "UNCERTAIN"},
+            {"annotator_id": "ANN_02", "uncertainty_label": "UNCERTAIN"},
+        ]
+        self.assertEqual(
+            uncertainty_usage(rows, "annotator_id"),
+            {"ANN_01": {"UNCERTAIN": 1}, "ANN_02": {"UNCERTAIN": 2}},
+        )
+
+
+class TestAppExportFixtures(unittest.TestCase):
+    """End to end: the app's exact export format runs through the script."""
+
+    def run_main(self, args: list[str]) -> tuple[int, str]:
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out), contextlib.redirect_stderr(io.StringIO()):
+            code = calculate_agreement.main(args)
+        return code, out.getvalue()
+
+    def test_stage2_exports_from_two_annotators(self) -> None:
+        code, output = self.run_main([
+            str(FIXTURES / "app_export_stage2_ANN_01.csv"),
+            str(FIXTURES / "app_export_stage2_ANN_02.csv"),
+        ])
+        self.assertEqual(code, 0)
+        self.assertIn("Annotators found: 2", output)
+        self.assertIn("semantic_adequacy", output)
+        self.assertIn("Uncertainty flags", output)
+        dimension_lines = [l for l in output.splitlines() if l.startswith("uncertainty_label")]
+        self.assertEqual(dimension_lines, [], msg="uncertainty_label must not be scored")
+
+    def test_stage1_exports_with_reviewer_column(self) -> None:
+        code, output = self.run_main([
+            str(FIXTURES / "app_export_stage1_ANN_01.csv"),
+            str(FIXTURES / "app_export_stage1_ANN_02.csv"),
+            "--unit-column", "item_id",
+            "--annotator-column", "reviewer_id",
+        ])
+        self.assertEqual(code, 0)
+        self.assertIn("recommended_action", output)
+        for line in output.splitlines():
+            self.assertFalse(line.startswith(("reviewer_id", "suggested_indian")), msg=line)
+
+    def test_same_file_twice_is_rejected_as_duplicate(self) -> None:
+        path = str(FIXTURES / "app_export_stage2_ANN_01.csv")
+        code, _ = self.run_main([path, path])
+        self.assertEqual(code, 1)
+
+    def test_where_restricts_code_switch_scoring(self) -> None:
+        code, output = self.run_main([
+            str(FIXTURES / "app_export_stage2_ANN_01.csv"),
+            str(FIXTURES / "app_export_stage2_ANN_02.csv"),
+            "--where", "primary_phenomenon=CODE_SWITCHING",
+        ])
+        self.assertEqual(code, 0)
+        self.assertIn("insufficient data", output)
 
 
 if __name__ == "__main__":

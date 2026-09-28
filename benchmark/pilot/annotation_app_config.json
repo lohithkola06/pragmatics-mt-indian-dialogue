@@ -1,0 +1,19 @@
+{
+  "stage2_enabled": false,
+  "calibration_items": [
+    "HIN_POL_005",
+    "HIN_IND_009",
+    "HNG_IND_002",
+    "HNG_STA_001",
+    "HNG_CSW_003"
+  ],
+  "synced_docs": [
+    "benchmark/guidelines/annotation_guidelines.md",
+    "benchmark/guidelines/human_evaluation_guidelines.md",
+    "benchmark/guidelines/annotator_training.md",
+    "benchmark/guidelines/contrastive_item_guidelines.md",
+    "benchmark/schema/label_definitions.md",
+    "benchmark/schema/severity_guidelines.md"
+  ],
+  "contact_instructions": "Use the contact details in the invitation you received from the researcher."
+}
