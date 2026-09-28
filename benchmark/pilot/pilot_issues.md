@@ -100,6 +100,10 @@ comfortable middle choice.
 **Proposed action:** reviewers should re-rate severity independently, without
 seeing the assigned label. A more even spread is expected after review.
 
+**In place:** the Stage 1 review form hides each item's assigned severity and asks
+for the reviewer's own rating, exported as the `reviewer_severity` column. Comparing
+that column with the assigned `severity` is the re-rating.
+
 ### Issue 3 — No naturally occurring items
 
 **Severity:** medium
@@ -264,6 +268,9 @@ carry forward as-is into Stage 1 review, where reviewers now have an explicit ex
 criterion: is each reference natural **in Indian English**, and if not, supply an
 Indian-English alternative. Conforming the reference set is expected output of the
 pilot, not a precondition of it.
+
+Alternatives are collected in their own column, `suggested_indian_english_reference`,
+in the Stage 1 review export, rather than mixed into free-text notes.
 
 ### Issue 11 — Minimal pairs must not be split across data splits
 

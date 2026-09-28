@@ -67,7 +67,8 @@ benchmark/
   examples/        Worked example items with field-by-field explanations
   pilot/           47 draft pilot items, templates, plan, issues, statistics
   data/            Dataset splits (empty until the pilot is validated)
-scripts/           Validation, statistics, annotation-sheet and agreement tooling
+scripts/           Validation, statistics, annotation-sheet, agreement and app-data tooling
+annotation-app/    Web app annotators use for pilot Stages 1 and 2 (React, deploys to Vercel)
 experiments/       Prompts, configs, model outputs, logs (scaffold)
 evaluation/        Semantic/pragmatic/contrastive metrics, human & LLM judging (scaffold)
 results/           Tables, figures, reports, error analysis (scaffold)
@@ -135,7 +136,7 @@ python -m unittest discover scripts/tests
 Requires Python 3.9+ with `jsonschema`. See [scripts/README.md](scripts/README.md).
 
 **Next:** recruit native-speaker annotators, run pilot Stage 1 item review followed by
-Stage 2 rating, measure agreement, revise the schema to `0.2.0` in light of the findings,
+Stage 2 rating in the [annotation app](annotation-app/README.md), measure agreement, revise the schema to `0.2.0` in light of the findings,
 and only then run translation baselines. Details in
 [benchmark/pilot/pilot_plan.md](benchmark/pilot/pilot_plan.md) and
 [docs/planning/week_02/](docs/planning/week_02/).

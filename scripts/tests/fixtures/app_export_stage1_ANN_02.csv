@@ -1,0 +1,3 @@
+item_id,reviewer_id,source_is_natural,intended_interpretation_is_clear,reference_is_valid,contrastive_is_semantically_close,contrastive_is_pragmatically_wrong,primary_label_is_correct,context_label_is_correct,no_undocumented_cultural_assumption,reviewer_severity,recommended_action,suggested_indian_english_reference,notes
+HIN_POL_005,ANN_02,YES,YES,YES,YES,YES,YES,YES,YES,MAJOR,ACCEPT,,
+HNG_CSW_004,ANN_02,YES,YES,UNSURE,YES,YES,YES,NO,YES,MAJOR,REVISE,,"Context status should be HELPFUL, not REQUIRED."

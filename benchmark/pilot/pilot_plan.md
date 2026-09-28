@@ -133,23 +133,46 @@ the pilot cannot detect region-dependence, and that limitation must be reported.
 
 ### Stage 1 — Item review (before rating)
 
-Both annotators independently review all 47 items using
-[pilot_item_review_template.csv](pilot_item_review_template.csv), judging:
+Both annotators independently review all 47 items in Stage 1 of the
+[annotation app](../../annotation-app/README.md). Its export has the columns of
+[pilot_item_review_template.csv](pilot_item_review_template.csv). For each item
+they answer Yes, No or Unsure to:
 
-1. Is the source utterance natural?
-2. Is the intended interpretation clear?
-3. Is the reference translation acceptable?
+1. Is the source utterance natural? (`source_is_natural`)
+2. Is the intended interpretation clear? (`intended_interpretation_is_clear`)
+3. Is the reference translation acceptable, in natural Indian English?
+   (`reference_is_valid`)
 4. Is the contrastive translation semantically close?
+   (`contrastive_is_semantically_close`)
 5. Is the contrastive translation pragmatically wrong in context?
-6. Is the primary label correct?
-7. Is the context label correct?
+   (`contrastive_is_pragmatically_wrong`)
+6. Is the primary label correct? (`primary_label_is_correct`)
+7. Is the context label correct? (`context_label_is_correct`)
+8. Can the item be read without an undocumented cultural assumption?
+   (`no_undocumented_cultural_assumption`)
+
+They also give:
+
+- their own severity rating for the contrastive error, without seeing the assigned
+  one (`reviewer_severity`, for [Issue 2](pilot_issues.md)),
+- a recommendation of Accept, Revise or Reject (`recommended_action`),
+- optionally, a better Indian English reference
+  (`suggested_indian_english_reference`, for [Issue 10](pilot_issues.md)),
+- notes, which the app requires for every No, Unsure, Revise and Reject.
+
+The app shows the source utterance first with the context covered, so reviewers can
+form a reading before seeing the previous turns. That is the cover-the-context test
+behind question 7.
 
 Question 5 is the most important. An item whose contrastive translation both
 reviewers would accept measures nothing and must be rejected.
 
 ### Stage 2 — Translation rating
 
-Generate the annotation sheet:
+Annotators rate in Stage 2 of the annotation app, which shows one candidate at a
+time and hides the item ID, the labels, the preservation requirement and which
+candidate is the reference. The app's export has exactly the columns of the blind
+sheet. The sheet itself remains available for rating outside the app:
 
 ```bash
 python scripts/create_annotation_sheet.py benchmark/pilot/pilot_items_v1.jsonl --blind
@@ -159,13 +182,21 @@ This produces 94 rows — the reference and contrastive candidate for each of th
 items — with the candidate type withheld and an answer key written to a separate
 file. Annotators must not see the key.
 
+In the app, the two candidates of an item fall in different halves of the sequence,
+so they are never shown next to each other, and each half mixes references and
+contrastives evenly.
+
 Each annotator rates every candidate on the twelve dimensions in
 [pilot_annotation_template.csv](pilot_annotation_template.csv), following
 [human_evaluation_guidelines.md](../guidelines/human_evaluation_guidelines.md).
 
-**Calibration:** both annotators rate the same 5 items first and compare, before
-completing the rest. Calibrate on the guidelines and the scale, never on specific
-answers.
+**Calibration:** both annotators rate the same 5 items (10 candidates) first and
+compare, before completing the rest. Calibrate on the guidelines and the scale,
+never on specific answers. The calibration items are set in
+[annotation_app_config.json](annotation_app_config.json) and cover both languages,
+all four categories, a code-switching item and a `NOT_REQUIRED` item. The app stops
+after them, asks for the calibration CSV, and locks those ratings when the annotator
+continues, so the record shows what they rated before the discussion.
 
 **Independence:** no discussion of individual items during annotation. Agreement is
 computed on independent judgements, and any coordination invalidates it.
@@ -173,8 +204,22 @@ computed on independent judgements, and any coordination invalidates it.
 ### Stage 3 — Agreement measurement
 
 ```bash
-python scripts/calculate_agreement.py <completed annotation CSV> --out agreement_report.md
+# One CSV per annotator, as exported by the app
+python scripts/calculate_agreement.py <ANN_01>.csv <ANN_02>.csv --out agreement_report.md
+
+# Code-switch agreement on the code-switching items only
+python scripts/calculate_agreement.py <ANN_01>.csv <ANN_02>.csv \
+    --where primary_phenomenon=CODE_SWITCHING
+
+# Stage 1 review agreement
+python scripts/calculate_agreement.py <ANN_01 review>.csv <ANN_02 review>.csv \
+    --unit-column item_id --annotator-column reviewer_id
 ```
+
+`code_switch_preservation` is fixed at `NOT_APPLICABLE` for the monolingual Hindi
+candidates, so its unfiltered agreement is inflated. Report the filtered figure.
+Uncertainty labels are not scored for agreement. The script reports how often each
+one was used instead.
 
 Computed on the **pre-adjudication** annotations. Adjudicating first and then
 measuring agreement would be misreporting.
@@ -341,6 +386,8 @@ rejected wastes annotator effort, which is the scarcest resource here.
 - [x] Annotation, review and adjudication CSV templates
 - [x] Validation, statistics, annotation-sheet and agreement scripts, with tests
 - [x] [pilot_statistics.md](pilot_statistics.md), generated from the dataset
+- [x] [Annotation web app](../../annotation-app/README.md) for Stages 1 and 2,
+      ready to deploy
 
 **Outstanding (requires people):**
 
